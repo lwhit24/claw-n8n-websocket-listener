@@ -1,0 +1,20 @@
+name: Basic validation
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Docker Compose file renders
+        run: |
+          cp .env.example .env
+          mkdir -p secrets state
+          echo "cm_live_dummy_key" > secrets/claw_api_key
+          echo "dummy_webhook_secret" > secrets/n8n_webhook_secret
+          docker compose config
+      - name: Check listener syntax
+        run: node --check src/listener.mjs
