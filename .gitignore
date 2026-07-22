@@ -1,0 +1,8 @@
+.env
+secrets/*
+!secrets/.gitkeep
+state/*
+!state/.gitkeep
+*.log
+.DS_Store
+node_modules/
