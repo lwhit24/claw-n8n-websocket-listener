@@ -50,7 +50,7 @@ It does not currently issue Claw's optional manual startup `sync` request. In te
 Clone the repository on the same server as n8n:
 
 ```bash
-git clone https://github.com/YOUR_USER/claw-n8n-websocket-listener.git
+git clone https://github.com/lwhit24/claw-n8n-websocket-listener.git
 cd claw-n8n-websocket-listener
 cp .env.example .env
 ```
