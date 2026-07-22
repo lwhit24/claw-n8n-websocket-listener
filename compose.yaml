@@ -1,0 +1,67 @@
+name: claw-n8n-listener
+
+services:
+  claw-listener:
+    image: node:24-alpine
+    container_name: claw-listener
+    restart: unless-stopped
+    init: true
+    user: "65532:65532"
+    working_dir: /app
+    command:
+      - node
+      - /app/listener.mjs
+
+    environment:
+      N8N_WEBHOOK_URL: "http://${N8N_CONTAINER}:5678${N8N_WEBHOOK_PATH}"
+      ALLOWED_SENDERS: "${ALLOWED_SENDERS}"
+      ALLOW_GROUPS: "${ALLOW_GROUPS:-false}"
+      STATE_PATH: "/state/state.json"
+
+    volumes:
+      - ./src/listener.mjs:/app/listener.mjs:ro
+      - ./state:/state
+
+    secrets:
+      - claw_api_key
+      - n8n_webhook_secret
+
+    networks:
+      - n8n_internal
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+
+    pids_limit: 64
+    mem_limit: 128m
+    cpus: 0.25
+
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  n8n_internal:
+    external: true
+    name: "${N8N_NETWORK}"
+
+secrets:
+  claw_api_key:
+    file: ./secrets/claw_api_key
+  n8n_webhook_secret:
+    file: ./secrets/n8n_webhook_secret
